@@ -32,7 +32,7 @@
 class Spreadsheet:
     
     def __init__(self,spreadsheetCells):
-        spreadsheet=self.__hash_spreadsheet__(spreadsheetCells)            
+        spreadsheet=self.__dict_spreadsheet__(spreadsheetCells)            
 
     def get_value(self,row,column):
         return self.__get__value(row,column)
@@ -46,15 +46,16 @@ class Spreadsheet:
     # working only if there are no multiple occurrences of the same cell in a formula        
     def __parser__(self,row,column):
         cell=self.spreadsheet[chr(row+65)][column-1]        
-        values=[]
+        values={}
         match.findall(r'([A-Z]\d)',self.spreadsheet[chr(row+65)][column-1])
         for el in match:
-            value.append(self.__get__value(ord(el[0])-65,el[1])) # recursive point 
-        for (i, el) in enumerate(match):
-            cell=cell.replace(el,values[i])           
+            if el not in values:
+                values[el]=self.__get__value(ord(el[0])-65,el[1]) # recursive point 
+        for el in match:
+            cell=cell.replace(el,values[el])           
         return eval(cell)    
 
-    def __hash_spreadsheet__(self,spreadsheetCells):
+    def __dict_spreadsheet__(self,spreadsheetCells):
         tmp={}
         for i in range(0,26):
             tmp[chr(i+65)]=[]
